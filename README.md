@@ -1,4 +1,4 @@
-# Skeleton
-Basic skeleton for js apps with sass, babel, bundler, browserSync.
+# Socketer
+Chat with socket.io
 
-// More details in the future.
+_Built on skeleton: [Skelelton](https://github.com/kumek/skeleton)_
