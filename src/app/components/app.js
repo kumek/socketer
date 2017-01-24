@@ -1,34 +1,53 @@
-import React, { Component } from 'react';
-import TopSection from './topSection/topSection';
-import Stats from './stats/stats';
+import React, { Component } from 'react'
+import TextInput from './TextInput/TextInput'
+import Map from './Map/Map'
 
 export default class App extends Component {
 	constructor(props) {
+		super();
+		this.socket = window.io('');
+
 		super(props);
 
 		this.state = {
-			player: {
-				stats: {
-					hp: 150,
-					exp: 400,
-					lvl: 4
+			message: '',
+			players: [
+				{
+					id: 125,
+					position: {
+						x: 340,
+						y: 560
+					},
+					name: 'Superman',
+					class: 'red'
 				}
-			}
+			],
+			playerId: 125
 		}
-		this.setName = this.setName.bind(this);
 	}
 
-	setName(name) {
-		console.log(`New name is ${name}`)
-		this.setState({ name });
+	setPlayerPosition({x, y}) {
+
 	}
+
+	sendMessage() {
+
+	}
+
+
 
 	render() {
 		return (
 			<div>
-				<TopSection name={this.state.name} setName={this.setName}/>
-				<Stats stats={this.state.player.stats}/>
+				<Map 
+					players={this.state.players}
+					setPlayerPosition={this.setPlayerPosition}
+				/>
+				<TextInput 
+					sendMessage={this.sendMessage}
+					setMessage={message => {this.setState({ message })}}
+				/>
 			</div>
-			)
+		)
 	}
 }

@@ -1,9 +1,10 @@
-var http = require('http');
-var express = require('express');
+var express = require('express')
+var app = express();
+var http = require('http').Server(app);
+// var io = require('socket.io')(http)
+
 var color = require('colors');
 var path = require('path');
-
-var app = express();
 
 const PORT = 4666;
 
@@ -11,8 +12,7 @@ const PORT = 4666;
 let socketServer = require('./server')(http)
 
 // Set resources
-app.use('resources', express.static(path.join(__dirname, 'dist/public')));
-
+app.use('/resources', express.static(path.join(__dirname, 'dist/resources')));
 
 // Server main page
 app.get('/', function(req, res) {
@@ -20,6 +20,6 @@ app.get('/', function(req, res) {
 });
 
 // Start server
-app.listen(PORT, function() {
+http.listen(PORT, function() {
 	console.log(`App has started on port: ${PORT}`.green);
 });

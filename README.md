@@ -1,4 +1,4 @@
 # Socketer
 Chat with socket.io
 
-_Built on skeleton: [Skelelton](https://github.com/kumek/skeleton)_
+_Built on skeleton: [Skeleton](https://github.com/kumek/skeleton)_

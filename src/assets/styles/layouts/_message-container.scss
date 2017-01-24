@@ -1,0 +1,46 @@
+.message-container {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: #555;
+	height: 50px;
+
+	max-width: 1000px;
+	left: 50%;
+	transform: translateX(-50%);
+
+	form {
+		margin: 0;
+	}
+
+	&__input {
+		width: 90%;
+
+		font-family: $main_font, sans-serif;
+		font-weight: 300;
+		font-size: 1.8em;
+		line-height: 1.9em;
+		padding: 0.2em;
+
+		height: 100%;
+
+		outline: none;
+	}
+
+	&__button {
+		display: block;
+		position: absolute;
+		float: right;
+
+		top: 50%;
+		transform: translateY(-50%);
+		right: 0;
+		width: 10%;
+
+		font-family: $main_font, sans-serif;
+		font-size: 1.5em;
+		height: 100%;
+
+		outline: none;
+	}
+}
