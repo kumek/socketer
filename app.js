@@ -12,7 +12,7 @@ const PORT = 4666;
 let socketServer = require('./server')(http)
 
 // Set resources
-app.use('/resources', express.static(path.join(__dirname, 'dist/resources')));
+app.use('/resources', express.static(path.join(__dirname, 'dist/resources')))
 
 // Server main page
 app.get('/', function(req, res) {

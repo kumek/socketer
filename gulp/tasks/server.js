@@ -6,7 +6,8 @@ import {path} from '../config/path';
 
 gulp.task('server', () => {
 	browserSync({
-		'server': './dist',
+		server: './dist',
+		ghostMode: false
 	});
 })
 

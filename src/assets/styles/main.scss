@@ -1,4 +1,7 @@
 
+//Normalize
+@import 'normalize';
+
 // Variables
 @import 'variables/colors';
 @import 'variables/typography';
@@ -8,12 +11,9 @@
 //Configs
 // @import 'config/*';
 
-//Normalize
-@import 'normalize';
 
 //Partials
-@import 'partials/buttons';
-@import 'partials/navBar';
+@import "partials/*.scss";
 
 //Layouts
 @import "layouts/*.scss";
