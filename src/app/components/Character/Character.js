@@ -15,7 +15,10 @@ const Character = ({
 					left: position.x
 				}
 			}>
-			{name}
+			<img className="character__logo" src="resources/images/butter.png" alt=""/>
+			<div className="character__name">
+				{name}
+			</div>
 		</div>
 	)
 }
