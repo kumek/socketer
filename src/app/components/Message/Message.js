@@ -6,7 +6,7 @@ const Message = ({id, content, position}) => {
 			style={
 				{
 					top: position.y,
-					left: position.x + 120
+					left: position.x + 130
 				}
 			}>
 		{content}
