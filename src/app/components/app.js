@@ -70,6 +70,9 @@ export default class App extends Component {
 			let players = this.state.players.slice().map(player => {
 				return (playerId === player.id ? Object.assign({}, player, {position}) : player)
 			})
+			players.sort((p1, p2) => {
+				return p1.position.y - p2.position.y
+			})
 			this.setState({players})
 		})
 
