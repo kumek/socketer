@@ -80,7 +80,11 @@ let server = http => {
 
 		socket.on('disconnect', () => {
 			console.log(`[${player.id}]`.yellow + `(${player.name})` + ' disconnected'.red)
-
+			io.emit('alert', {
+				id: shortid.generate(),
+				content: `${player.name} has left`,
+				cooldown: 2000
+			})
 			io.emit('player-left', player)
 			players = players.filter(_player => {return _player.id !== player.id})
 		})

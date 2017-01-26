@@ -1,0 +1,13 @@
+.alerts {
+	position: absolute;
+	bottom: 50px;
+	left: 50%;
+	transform: translateX(-50%);
+
+}
+
+.alert {
+	color: #F15E02;
+	text-shadow: 2px 2px 0px black;
+	font-size: 3em;
+}

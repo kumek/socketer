@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import TextInput from './TextInput/TextInput'
 import Room from './Room/Room'
 import LoginForm from './LoginForm/LoginForm'
+import Alerts from './Alerts/Alerts'
 
 export default class App extends Component {
 	constructor(props) {
@@ -16,6 +17,7 @@ export default class App extends Component {
 			messages: [],
 			player: {},
 			players: [],
+			alerts: []
 		}
 
 		// Binding
@@ -26,6 +28,8 @@ export default class App extends Component {
 		this.fadeMessage = this.fadeMessage.bind(this)
 		this.onEnterMessage = this.onEnterMessage.bind(this)
 		this.setPlayerType = this.setPlayerType.bind(this)
+		this.dismissAlert = this.dismissAlert.bind(this)
+		this.fadeAlert = this.fadeAlert.bind(this)
 
 		// Sockets emiting
 		window.socket.on('message', ({id, message, playerId}) => {
@@ -37,6 +41,15 @@ export default class App extends Component {
 			})
 			this.setState({messages})
 			this.fadeMessage({id, cooldown: 2000})
+		})
+
+		window.socket.on('alert', alert => {
+			console.log('Alert: ')
+			let alerts = this.state.alerts.slice()
+			alerts.push(alert)
+			this.setState({alerts})
+
+			if(alert.cooldown) this.fadeAlert(alert)
 		})
 
 		window.socket.on('players', players => {
@@ -106,6 +119,13 @@ export default class App extends Component {
 		setTimeout(() => {
 			let messages = this.state.messages.filter(message => message.id !== id)
 			this.setState({messages})
+		}, cooldown)
+	}
+	
+	fadeAlert({id, cooldown}) {
+		setTimeout(() => {
+			let alerts = this.state.alerts.filter(alert => alert.id !== id)
+			this.setState({alerts})
 		}, cooldown)
 	}
 
@@ -180,6 +200,11 @@ export default class App extends Component {
 		this.setState({message: ''})
 	}
 
+	dismissAlert({id}) {
+		this.setState({alerts : this.state.alerts.slice().filter(alert => alert.id !== id)})
+	}
+
+
 
 	render() {
 		return (
@@ -201,7 +226,10 @@ export default class App extends Component {
 					sendPlayerName={this.sendPlayerName}	
 				/>
 
+
 			}
+			<Alerts alerts={this.state.alerts} dismissAlert={this.dismissAlert} />
+
 			</div>
 		)
 	}
