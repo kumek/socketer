@@ -5,7 +5,7 @@ export default class TextInput extends Component {
 		this.form.addEventListener('submit', e => {
 			e.preventDefault()
 
-			this.props.sendMessage()
+			this.props.onEnterMessage()
 		})
 
 		this.input.addEventListener('input', e => {

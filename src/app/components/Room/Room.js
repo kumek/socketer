@@ -8,7 +8,7 @@ const Room = ({
 	messages,
 	setPlayerPosition,
 	setMessage,
-	sendMessage
+	onEnterMessage
 }) => {
 	return (
 		<div>
@@ -21,7 +21,7 @@ const Room = ({
 			<TextInput
 				message={message}
 				setMessage={setMessage}
-				sendMessage={sendMessage}
+				onEnterMessage={onEnterMessage}
 			/>
 		</div>
 	)

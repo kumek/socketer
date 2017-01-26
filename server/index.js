@@ -28,6 +28,17 @@ let server = http => {
 			io.emit('players', players)
 		})
 
+		socket.on('set-type', type => {
+			console.log(`[${player.id}]`.yellow + ` Set type: ` + `${type}`.green)
+
+			player.type = type
+
+			io.emit('player-type', {
+				playerId: player.id,
+				type: type
+			})
+		})
+
 		socket.on('set-position', position => {
 			console.log(`[${player.id}]`.yellow + ` Moved to: ` + `[${position.x},${position.y}]`.green)
 

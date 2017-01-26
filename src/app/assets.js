@@ -2,7 +2,7 @@ const assets = {
 	characters: [{
 		name: 'butter',
 		file: 'butter.png'
-	} {, 
+	}, {
 		name: 'eric',
 		file: 'eric.png'
 	}, {  
@@ -14,10 +14,7 @@ const assets = {
 	}, {  
 		name: 'kyle',
 		file: 'kyle.png'
-	}, {  
-		name: 'sally',
-		file: 'sally.png'
-	}, {  
+	}, {
 		name: 'stan',
 		file: 'stan.png'
 	}, {  

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import TextInput from './TextInput/TextInput'
-// import Map from './Map/Map'
 import Room from './Room/Room'
 import LoginForm from './LoginForm/LoginForm'
 
@@ -25,6 +24,8 @@ export default class App extends Component {
 		this.sendPlayerName = this.sendPlayerName.bind(this)
 		this.setPlayerPosition = this.setPlayerPosition.bind(this)
 		this.fadeMessage = this.fadeMessage.bind(this)
+		this.onEnterMessage = this.onEnterMessage.bind(this)
+		this.setPlayerType = this.setPlayerType.bind(this)
 
 		// Sockets emiting
 		window.socket.on('message', ({id, message, playerId}) => {
@@ -42,11 +43,26 @@ export default class App extends Component {
 			this.setState({players})
 		})
 
+		window.socket.on('player-type', ({playerId, type}) => {
+			let players = this.state.players.map(player => {
+				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
+			})
+		})
+
 		window.socket.on('your-id', (id) => {
 			console.log(`You received your id: ${id}`)
 			this.setState({
 				player: Object.assign({}, this.state.player, {id})
 			})
+		})
+
+		window.socket.on('player-type', ({playerId, type}) => {
+			console.log(`Player ${playerId} changed to be ${type}`)
+			let players = this.state.players.map(player => {
+				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
+			})
+
+			this.setState({players})
 		})
 
 		window.socket.on('player-position', ({playerId, position}) => {
@@ -71,14 +87,10 @@ export default class App extends Component {
 		})
 	}
 
+	// Fade message after time
 	fadeMessage({id, cooldown}) {
-		console.log(id)
-		console.log(cooldown)
 		setTimeout(() => {
-			console.log('Messages before fade')
-			console.log(this.state.messagse)
 			let messages = this.state.messages.filter(message => message.id !== id)
-			console.log(messages)
 			this.setState({messages})
 		}, cooldown)
 	}
@@ -86,8 +98,17 @@ export default class App extends Component {
 	// State setters
 	setPlayerName(name) {
 		this.setState({
-			player: Object.assign({}, this.state.player, { name })
+			player: Object.assign({}, this.state.player, {name})
 		})
+	}
+
+	setPlayerType(type) {
+		console.log(`Changed type to ${type}`)
+		this.setState({
+			player: Object.assign({}, this.state.player, {type})
+		})
+
+		window.socket.emit('set-type', type)
 	}
 
 	setPlayerPosition(position) {
@@ -104,16 +125,36 @@ export default class App extends Component {
 	}
 
 	sendPlayerName(name) {
+		if(name.split('')[0])
 		this.setState({
 			player: Object.assign({}, this.state.player, { name })
 		})
 		window.socket.emit('set-username', name)
 	}
 
+	onEnterMessage() {
+		if(this.state.message[0] === '/') {
+			let cmd = this.state.message.slice(1)
+			this.runCommand(cmd.split(' '))
+		} else {
+			this.sendMessage(this.state.message)
+		}
+	}
+
 	sendMessage() {
 		console.log('Sending message')
 		window.socket.emit('message', this.state.message)
 		this.setState({ message: '' })
+	}
+
+	runCommand([command, ...params]) {
+		switch(command) {
+			case 'character' :
+				this.setPlayerType(params[0])
+			default:
+		}
+
+		this.setState({message: ''})
 	}
 
 
@@ -130,7 +171,7 @@ export default class App extends Component {
 					setMessage={this.setMessage}
 					// setPlayerName={this.setPlayerName}
 
-					sendMessage={this.sendMessage}
+					onEnterMessage={this.onEnterMessage}
 				/>
 				:
 				<LoginForm

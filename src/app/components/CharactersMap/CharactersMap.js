@@ -10,7 +10,7 @@ export default class Map extends Component {
 				<Character 
 					name={player.name}
 					position={player.position}
-					type={player.class}
+					type={player.type}
 				/>
 			)
 		})
@@ -37,6 +37,12 @@ export default class Map extends Component {
 	render() {
 		return (
 			<div className="map" ref={map => this.map = map} style={{ position: 'relative' }}>
+				<div style={{padding: '20px'}}>
+					Commands:
+					<p>
+						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy)		
+					</p>
+				</div>
 				{this.drawPlayers({ players: this.props.players })}
 				{this.drawMessages({messages: this.props.messages})}
 			</div>	
