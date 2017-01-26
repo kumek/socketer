@@ -20,6 +20,9 @@ const assets = {
 	}, {  
 		name: 'tweek',
 		file: 'tweek.png'
+	}, {  		
+		name: 'dead',
+		file: 'dead.png'
 	}, {  
 		name: 'wendy',
 		file: 'wendy.png'

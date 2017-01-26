@@ -17,7 +17,7 @@ const Character = ({
 					left: position.x
 				}
 			}>
-			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt=""/>
+			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt="" style={type === 'dead' ? {height: '100px'} : null}/>
 			<div className="character__name">
 				{name}
 			</div>

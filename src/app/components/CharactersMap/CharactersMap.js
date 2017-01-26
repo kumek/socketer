@@ -40,7 +40,10 @@ export default class Map extends Component {
 				<div style={{padding: '20px'}}>
 					Commands:
 					<p>
-						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy)		
+						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy)
+					</p>
+					<p>
+						/backstab (Standing behind somebody)
 					</p>
 				</div>
 				{this.drawPlayers({ players: this.props.players })}

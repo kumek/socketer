@@ -60,6 +60,24 @@ let server = http => {
 			})
 		})
 
+		socket.on('backstab', () => {
+			let deathPlayer = players.find(_player => {
+				console.log('start')
+				console.log('y ' + (_player.position.y - player.position.y ))
+				console.log('x' + Math.abs(_player.position.x - player.position.x))
+
+				return (_player.id !== player.id ) &&
+				(Math.abs(_player.position.x - player.position.x) < 25) &&
+				(_player.position.y - player.position.y < 15) &&
+				(_player.position.y - player.position.y > 0)
+			})
+			if(deathPlayer) {
+				io.emit('backstabbed', deathPlayer)
+			} else {
+				socket.emit('alert', "You didn't hit! ")
+			}
+		})
+
 		socket.on('disconnect', () => {
 			console.log(`[${player.id}]`.yellow + `(${player.name})` + ' disconnected'.red)
 
