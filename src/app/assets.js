@@ -26,6 +26,12 @@ const assets = {
 	}, {  
 		name: 'wendy',
 		file: 'wendy.png'
-	}]
+	}],
+
+	items: {
+		dollar: {
+			file: 'dollar.png'
+		}
+	}
 }
 export default assets

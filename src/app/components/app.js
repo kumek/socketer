@@ -17,7 +17,8 @@ export default class App extends Component {
 			messages: [],
 			player: {},
 			players: [],
-			alerts: []
+			alerts: [],
+			cash: []
 		}
 
 		// Binding
@@ -109,6 +110,12 @@ export default class App extends Component {
 			console.log(`${name} has beed backstabbed! He's dead :(`)
 		})
 
+		window.socket.on('cash-new', dollar => {
+			console.log('New dollar appeared')
+			let cash = this.state.cash.slice()
+			cash.push(dollar)
+			this.setState({cash})
+		})
 	}
 
 	// Fade message after time
@@ -215,6 +222,7 @@ export default class App extends Component {
 					// setPlayerName={this.setPlayerName}
 
 					onEnterMessage={this.onEnterMessage}
+					cash={this.state.cash}
 				/>
 				:
 				<LoginForm
