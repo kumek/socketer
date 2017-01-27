@@ -11,6 +11,7 @@ export default class Map extends Component {
 					name={player.name}
 					position={player.position}
 					type={player.type}
+					dead={player.dead}
 				/>
 			)
 		})

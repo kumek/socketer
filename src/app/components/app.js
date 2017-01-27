@@ -103,15 +103,12 @@ export default class App extends Component {
 		})
 
 		window.socket.on('backstabbed', ({id, name}) => {
-			let players = this.state.players.slice().map(player => (player.id === id ? Object.assign({}, player, {type: 'dead'}) : player))
+			let players = this.state.players.slice().map(player => (player.id === id ? Object.assign({}, player, {dead: true}) : player))
 			console.log(players)
 			this.setState({players})
 			console.log(`${name} has beed backstabbed! He's dead :(`)
 		})
 
-		window.socket.on('alert', message => {
-			console.log(`Alert: ${message}`)
-		})
 	}
 
 	// Fade message after time
@@ -203,8 +200,6 @@ export default class App extends Component {
 	dismissAlert({id}) {
 		this.setState({alerts : this.state.alerts.slice().filter(alert => alert.id !== id)})
 	}
-
-
 
 	render() {
 		return (

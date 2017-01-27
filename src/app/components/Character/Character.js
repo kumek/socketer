@@ -4,9 +4,10 @@ import assets from '../../assets'
 const Character = ({
 	name,
 	position,
-	type
+	type,
+	dead
 }) => {
-	let asset = assets.characters.find(char => char.name === type)
+	let asset = assets.characters.find(char => char.name === (dead ? 'dead' : type))
 
 	return (
 		<div className="character"
@@ -17,7 +18,7 @@ const Character = ({
 					left: position.x
 				}
 			}>
-			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt="" style={type === 'dead' ? {height: '100px'} : null}/>
+			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt="" style={dead ? {height: '100px'} : null}/>
 			<div className="character__name">
 				{name}
 			</div>
