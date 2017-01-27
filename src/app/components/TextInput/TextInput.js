@@ -20,7 +20,7 @@ export default class TextInput extends Component {
 				<div className="message-container">
 					<form ref={form => this.form = form}>
 						<input className="message-container__input" type="text" ref={input => this.input = input} value={this.props.message}/>
-						<button className="button button--grey message-container__button" type="submit" placeholder="Type message ...">Send</button>
+						<button className="button button--grey message-container__button" type="submit" placeholder="Type message ...">Say</button>
 					</form>
 				</div>	
 			</div>

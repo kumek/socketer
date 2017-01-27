@@ -1,6 +1,8 @@
 let socketio = require('socket.io')
 let shortid = require('shortid')
 
+const CHARACTER_TYPES = ['butter', 'eric', 'kenny', 'kevin', 'kyle', 'stan', 'tweek', 'wendy']
+
 let server = http => {
 	console.log('Socket servers starting')
 	let io = socketio(http)
@@ -38,6 +40,7 @@ let server = http => {
 
 		socket.on('set-username', username => {
 			player.name = username
+			player.type = CHARACTER_TYPES[Math.floor(Math.random() * (CHARACTER_TYPES.length - 1))]
 
 			players.push(player)
 			console.log(`[${player.id}]`.yellow + ` Set username: ` + `${username}`.green)
