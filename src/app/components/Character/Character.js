@@ -14,8 +14,8 @@ const Character = ({
 			style={
 				{
 					position: 'absolute',
-					top: position.y,
-					left: position.x
+					top: position.y - 100,
+					left: position.x - 50
 				}
 			}>
 			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt="" style={dead ? {height: '100px'} : null}/>

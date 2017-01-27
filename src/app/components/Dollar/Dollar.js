@@ -3,8 +3,8 @@ import assets from '../../assets'
 
 const Dollar = ({
 	dollar,
+	onDollarClick
 }) => {
-	console.log('DOllar is sgdalsigdjlasiegjlsaiegjlsge ')
 	return (
 		<div
 			className="dollar"
@@ -14,6 +14,7 @@ const Dollar = ({
 						left: dollar.position.x
 					}
 				}
+			onClick={onDollarClick.bind(null, dollar)}
 			>
 			<img 
 				src={`/resources/images/${assets.items.dollar.file}`} 

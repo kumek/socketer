@@ -16,7 +16,7 @@ let server = http => {
 				y: Math.floor(Math.random()*900)-50
 			}
 		}
-		console.log('New dollar printed')
+		console.log('New dollar printed'.blue)
 		cash.push(dollar)
 		io.emit('cash-new', dollar)
 		setTimeout(printDollar, Math.floor(Math.random()*10000)+5000)
@@ -77,6 +77,30 @@ let server = http => {
 				message,
 				playerId: player.id
 			})
+		})
+
+		socket.on('cash-grab', id => {
+			let dollarFound
+			cash = cash.filter(dollar => {
+				if(dollar.id === id) {
+					dollarFound = dollar
+					return false
+				}
+				return true
+			})
+
+			if(dollarFound) {
+				player.accont += dollarFound.value
+				socket.emit('dollar-new', dollarFound)
+				io.emit('cash-grabbed', dollarFound)
+			} else {
+				socket.emit('alert', {
+					id: shortid.generate(),
+					content: 'You missed that money!',
+					cooldown: 2000
+				})
+			}
+
 		})
 
 		socket.on('backstab', () => {

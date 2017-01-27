@@ -15,10 +15,12 @@ export default class App extends Component {
 		this.state = {
 			message: '',
 			messages: [],
-			player: {},
+			player: {
+				account: 0
+			},
 			players: [],
 			alerts: [],
-			cash: []
+			cash: [],
 		}
 
 		// Binding
@@ -55,6 +57,10 @@ export default class App extends Component {
 
 		window.socket.on('players', players => {
 			this.setState({players})
+		})
+
+		window.socket.on('cash', cash => {
+			this.setState({cash})
 		})
 
 		window.socket.on('player-type', ({playerId, type}) => {
@@ -115,6 +121,22 @@ export default class App extends Component {
 			let cash = this.state.cash.slice()
 			cash.push(dollar)
 			this.setState({cash})
+		})
+
+		window.socket.on('cash-grabbed', ({id}) => {
+			console.log('Somebody grabbed cash!')
+			this.setState({cash: this.state.cash.filter(dollar => dollar.id !== id)})
+		})
+
+		window.socket.on('dollar-new', ({value}) => {
+			console.log(`You catched this dollar! ${value}`)
+			this.setState({
+				player: Object.assign({}, this.state.player,
+					{
+						account: this.state.player.account + value
+					}
+				)
+			})
 		})
 	}
 
@@ -208,6 +230,11 @@ export default class App extends Component {
 		this.setState({alerts : this.state.alerts.slice().filter(alert => alert.id !== id)})
 	}
 
+	onDollarClick({id, position}) {
+		window.socket.emit('set-position', position)
+		window.socket.emit('cash-grab', id)
+	}
+
 	render() {
 		return (
 			<div className="app-container">
@@ -223,6 +250,7 @@ export default class App extends Component {
 
 					onEnterMessage={this.onEnterMessage}
 					cash={this.state.cash}
+					onDollarClick={this.onDollarClick}
 				/>
 				:
 				<LoginForm

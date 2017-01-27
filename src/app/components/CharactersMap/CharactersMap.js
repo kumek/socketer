@@ -31,7 +31,7 @@ export default class Map extends Component {
 
 	componentDidMount() {
 		this.map.addEventListener('click', e => {
-			this.props.setPlayerPosition({x: e.clientX-50, y: e.clientY-100})
+			this.props.setPlayerPosition({x: e.clientX, y: e.clientY})
 		})
 	}
 

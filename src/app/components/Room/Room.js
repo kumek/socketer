@@ -10,12 +10,14 @@ const Room = ({
 	cash,
 	setPlayerPosition,
 	setMessage,
-	onEnterMessage
+	onEnterMessage,
+	onDollarClick
 }) => {
 	return (
 		<div>
 			<Items 
 				cash={cash}
+				onDollarClick={onDollarClick}
 			/>
 			<CharactersMap 
 				players={players}
