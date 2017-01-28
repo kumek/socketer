@@ -2,6 +2,9 @@ let socketio = require('socket.io')
 let shortid = require('shortid')
 
 const CHARACTER_TYPES = ['butter', 'eric', 'kenny', 'kevin', 'kyle', 'stan', 'tweek', 'wendy']
+const PROPERTIES = {
+	MAX_NUMBER_OF_DOLLARS: 100	//Maximum number of dollars available on map
+}
 
 let server = http => {
 	console.log('Socket servers starting')
@@ -10,17 +13,20 @@ let server = http => {
 	let cash = [];
 
 	const printDollar = () => {
-		let dollar = {
-			id: shortid.generate(),
-			value: 1,
-			position: {
-				x: Math.floor(Math.random()*900)-50,
-				y: Math.floor(Math.random()*900)-50
+		if(cash.length < PROPERTIES.MAX_NUMBER_OF_DOLLARS) {
+			let dollar = {
+				id: shortid.generate(),
+				value: 1,
+				position: {
+					x: Math.floor(Math.random()*900)-50,
+					y: Math.floor(Math.random()*900)-50
+				}
 			}
+			console.log('New dollar printed'.blue)
+			cash.push(dollar)
+			io.emit('cash-new', dollar)
 		}
-		console.log('New dollar printed'.blue)
-		cash.push(dollar)
-		io.emit('cash-new', dollar)
+		
 		setTimeout(printDollar, Math.floor(Math.random()*10000)+5000)
 	}
 
