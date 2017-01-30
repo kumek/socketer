@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import Character from '../Character/Character'
 import Message from '../Message/Message'
 
-export default class Map extends Component {
+export default class CharactersMap extends Component {
 	drawPlayers({players, mapSize}) {
 		//Count pixels per one unit
 		return players.map(player => {
 			return (
 				<Character 
+					key={player.id}
 					name={player.name}
 					position={player.position}
 					type={player.type}

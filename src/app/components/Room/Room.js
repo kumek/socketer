@@ -2,8 +2,10 @@ import React, {Component} from 'react'
 import TextInput from '../TextInput/TextInput'
 import CharactersMap from '../CharactersMap/CharactersMap'
 import Items from '../Items/Items'
+import PlayerStats from '../PlayerStats/PlayerStats'
 
 const Room = ({
+	player,
 	players,
 	message,
 	messages,
@@ -29,6 +31,9 @@ const Room = ({
 				message={message}
 				setMessage={setMessage}
 				onEnterMessage={onEnterMessage}
+			/>
+			<PlayerStats
+				player={player}
 			/>
 		</div>
 	)

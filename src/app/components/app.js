@@ -240,6 +240,7 @@ export default class App extends Component {
 			<div className="app-container">
 			{this.state.player.name ? 
 				<Room
+					player={this.state.player}
 					players={this.state.players}
 					message={this.state.message}
 					messages={this.state.messages}
