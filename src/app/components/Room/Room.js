@@ -3,6 +3,7 @@ import TextInput from '../TextInput/TextInput'
 import CharactersMap from '../CharactersMap/CharactersMap'
 import Items from '../Items/Items'
 import PlayerStats from '../PlayerStats/PlayerStats'
+import ServerStats from '../ServerStats/ServerStats'
 
 const Room = ({
 	player,
@@ -32,9 +33,16 @@ const Room = ({
 				setMessage={setMessage}
 				onEnterMessage={onEnterMessage}
 			/>
-			<PlayerStats
-				player={player}
-			/>
+			<div className="stats">
+				<PlayerStats
+					player={player}
+				/>
+				<ServerStats
+					cash={cash}
+					players={players}
+				/>
+			</div>
+			
 		</div>
 	)
 }

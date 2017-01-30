@@ -1,0 +1,31 @@
+.server-stats {
+	margin-top: 2em;
+	font-size: 1.5em;
+	color: #FF0B1E;
+	text-shadow: 2px 2px 0 black;
+
+	&__players {
+		margin-top: 3em;
+		
+		ul {
+			list-style-type: none;
+		}
+
+		ul, li {
+			margin: 0;
+			padding: 0;
+		}
+
+	}
+
+	&__player {
+		margin-left: 2ch;
+
+		&__logo {
+			displa: block;
+			height: 1.5em;
+			width: auto;
+			float: right;
+		}
+	}
+}
