@@ -42,10 +42,9 @@ export default class CharactersMap extends Component {
 				<div style={{padding: '20px'}}>
 					Commands:
 					<p>
-						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy)
-					</p>
-					<p>
-						/backstab (Standing behind somebody)
+						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy) <br/>
+						/backstab (Standing behind somebody) <br/>
+						/generate [number] (max=50)
 					</p>
 				</div>
 				{this.drawPlayers({ players: this.props.players })}

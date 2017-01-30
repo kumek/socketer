@@ -212,6 +212,12 @@ export default class App extends Component {
 		window.socket.emit('backstab')
 	}
 
+	generateDollars(number) {
+		if(number) {
+			window.socket.emit('generate', number)
+		}
+	}
+
 	runCommand([command, ...params]) {
 		switch(command) {
 			case 'character' :
@@ -220,6 +226,8 @@ export default class App extends Component {
 			case 'backstab' :
 				this.backstabPlayer()
 				break
+			case 'generate' :
+				this.generateDollars(params[0])
 			default:
 		}
 

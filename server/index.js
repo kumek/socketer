@@ -12,7 +12,7 @@ let server = http => {
 	let players = [];
 	let cash = [];
 
-	const printDollar = () => {
+	const printDollar = (recursive = false) => {
 		if(cash.length < PROPERTIES.MAX_NUMBER_OF_DOLLARS) {
 			let dollar = {
 				id: shortid.generate(),
@@ -26,11 +26,19 @@ let server = http => {
 			cash.push(dollar)
 			io.emit('cash-new', dollar)
 		}
-		
-		setTimeout(printDollar, Math.floor(Math.random()*10000)+5000)
+
+		if(recursive) {
+			setTimeout(printDollar.bind(null, true), Math.floor(Math.random()*10000)+5000)
+		}
 	}
 
-	printDollar()
+	printDollar(true)
+
+	const generateDollars = number => {
+		for(let i=0; i<number; i++){
+			setTimeout(printDollar,i*250) 
+		}
+	}
 
 	io.on('connection', socket => {
 		let player = {
@@ -64,6 +72,15 @@ let server = http => {
 			io.emit('player-type', {
 				playerId: player.id,
 				type: type
+			})
+		})
+
+		socket.on('generate', number => {
+			generateDollars(number > 50 ? 50 : number);
+			io.emit('alert', {
+				id: shortid.generate(),
+				content: `${player.name} generated ${number} dollars`,
+				cooldown: 2500
 			})
 		})
 
