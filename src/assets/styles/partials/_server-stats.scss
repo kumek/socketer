@@ -20,6 +20,13 @@
 
 	&__player {
 		margin-left: 2ch;
+		line-height: 1.5em;
+		margin: 0.1ch;
+
+		&__account {
+			color: #FFF700;
+			font-size: 1.55em;
+		}
 
 		&__logo {
 			displa: block;

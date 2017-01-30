@@ -123,9 +123,18 @@ export default class App extends Component {
 			this.setState({cash})
 		})
 
-		window.socket.on('cash-grabbed', ({id}) => {
+		window.socket.on('cash-grabbed', ({grabbedDollar, playerId}) => {
 			console.log('Somebody grabbed cash!')
-			this.setState({cash: this.state.cash.filter(dollar => dollar.id !== id)})
+			console.log(grabbedDollar);
+			this.setState({
+				cash: this.state.cash.filter(dollar => dollar.id !== grabbedDollar.id),
+				players: this.state.players
+					.slice()
+					.map(player => player.id === playerId ?
+							Object.assign({}, player, {account: player.account + grabbedDollar.value}) :
+							player
+					)
+			})
 		})
 
 		window.socket.on('dollar-new', ({value}) => {

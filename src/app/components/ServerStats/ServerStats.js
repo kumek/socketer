@@ -13,11 +13,14 @@ const ServerStats= ({
 			<div className="server-stats__players">
 				<ul>
 					{
-						players.map(player => 
+						players
+						.sort((player1, player2) => player1.account < player2.account)
+						.map(player => 
 							<li 
 								className="server-stats__player" 
 								key={player.id}>
-							{player.name}
+								{console.log(player.account)}
+							{player.name} <span className="server-stats__player__account">{player.account}</span>
 							<img
 								className="server-stats__player__logo"
 								src={`/resources/images/${assets.characters.find(asset => asset.name === player.type).file}`} 

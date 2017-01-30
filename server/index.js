@@ -42,6 +42,7 @@ let server = http => {
 
 	io.on('connection', socket => {
 		let player = {
+			account: 0,
 			id: shortid.generate(),
 			position: {
 				x: 100,
@@ -116,9 +117,10 @@ let server = http => {
 			})
 
 			if(dollarFound) {
-				player.accont += dollarFound.value
+				player.account += dollarFound.value
 				socket.emit('dollar-new', dollarFound)
-				io.emit('cash-grabbed', dollarFound)
+				console.log(dollarFound);
+				io.emit('cash-grabbed', {grabbedDollar: dollarFound, playerId: player.id})
 			} else {
 				socket.emit('alert', {
 					id: shortid.generate(),
