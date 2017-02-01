@@ -7,7 +7,7 @@ class Player {
 
 		Object.assign(this, params)
 
-		this.emitAlert = this.emitAlert.bind(this)
+		this.alert = this.alert.bind(this)
 		this.hasEnergy = this.hasEnergy.bind(this)
 	}
 
