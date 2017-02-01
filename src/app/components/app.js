@@ -4,6 +4,8 @@ import Room from './Room/Room'
 import LoginForm from './LoginForm/LoginForm'
 import Alerts from './Alerts/Alerts'
 
+import {socket, alerts} from './sockets'
+
 export default class App extends Component {
 	constructor(props) {
 		super();
@@ -35,7 +37,12 @@ export default class App extends Component {
 		this.fadeAlert = this.fadeAlert.bind(this)
 
 		// Sockets emiting
-		window.socket.on('message', ({id, message, playerId}) => {
+		alerts.on('alert', alert => {
+			console.log('SUPER ALERT APPEARED')
+			console.log(alert)
+		})
+
+		socket.on('message', ({id, message, playerId}) => {
 			let messages = this.state.messages.slice()
 			messages.push({
 				id,
@@ -46,7 +53,7 @@ export default class App extends Component {
 			this.fadeMessage({id, cooldown: 2000})
 		})
 
-		window.socket.on('alert', alert => {
+		alerts.on('alert', alert => {
 			console.log('Alert: ')
 			let alerts = this.state.alerts.slice()
 			alerts.push(alert)
@@ -55,21 +62,21 @@ export default class App extends Component {
 			if(alert.cooldown) this.fadeAlert(alert)
 		})
 
-		window.socket.on('players', players => {
+		socket.on('players', players => {
 			this.setState({players})
 		})
 
-		window.socket.on('cash', cash => {
+		socket.on('cash', cash => {
 			this.setState({cash})
 		})
 
-		window.socket.on('player-type', ({playerId, type}) => {
+		socket.on('player-type', ({playerId, type}) => {
 			let players = this.state.players.map(player => {
 				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
 			})
 		})
 
-		window.socket.on('player-update', props => {
+		socket.on('player-update', props => {
 			console.log('Your player is updated!')
 			console.log(props)
 			this.setState({
@@ -77,14 +84,14 @@ export default class App extends Component {
 			})
 		})
 
-		// window.socket.on('your-id', (id) => {
+		// socket.on('your-id', (id) => {
 		// 	console.log(`You received your id: ${id}`)
 		// 	this.setState({
 		// 		player: Object.assign({}, this.state.player, {id})
 		// 	})
 		// })
 
-		window.socket.on('player-type', ({playerId, type}) => {
+		socket.on('player-type', ({playerId, type}) => {
 			console.log(`Player ${playerId} changed to be ${type}`)
 			let players = this.state.players.map(player => {
 				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
@@ -93,7 +100,7 @@ export default class App extends Component {
 			this.setState({players})
 		})
 
-		window.socket.on('player-position', ({playerId, position}) => {
+		socket.on('player-position', ({playerId, position}) => {
 			console.log(`Player ${playerId} moved to ${position.x},${position.y}`)
 			let players = this.state.players.slice().map(player => {
 				return (playerId === player.id ? Object.assign({}, player, {position}) : player)
@@ -104,34 +111,34 @@ export default class App extends Component {
 			this.setState({players})
 		})
 
-		window.socket.on('player-new', player => {
+		socket.on('player-new', player => {
 			let players = this.state.players.slice()
 			players.push(player)
 			console.log(`${player.name}[${player.id}] has joined`);
 			this.setState({players})
 		})
 
-		window.socket.on('player-left', player => {
+		socket.on('player-left', player => {
 			let players = this.state.players.filter(_player => _player.id !== player.id);
 			console.log(`${player.name}[${player.id}] has left`);
 			this.setState({players});
 		})
 
-		window.socket.on('backstabbed', ({id, name}) => {
+		socket.on('backstabbed', ({id, name}) => {
 			let players = this.state.players.slice().map(player => (player.id === id ? Object.assign({}, player, {dead: true}) : player))
 			console.log(players)
 			this.setState({players})
 			console.log(`${name} has beed backstabbed! He's dead :(`)
 		})
 
-		window.socket.on('cash-new', dollar => {
+		socket.on('cash-new', dollar => {
 			console.log('New dollar appeared')
 			let cash = this.state.cash.slice()
 			cash.push(dollar)
 			this.setState({cash})
 		})
 
-		window.socket.on('cash-grabbed', ({grabbedDollar, playerId}) => {
+		socket.on('cash-grabbed', ({grabbedDollar, playerId}) => {
 			console.log(grabbedDollar);
 			this.setState({
 				cash: this.state.cash.filter(dollar => dollar.id !== grabbedDollar.id),
@@ -144,7 +151,7 @@ export default class App extends Component {
 			})
 		})
 
-		window.socket.on('dollar-new', ({value}) => {
+		socket.on('dollar-new', ({value}) => {
 			console.log(`You catched this dollar! ${value}`)
 			this.setState({
 				player: Object.assign({}, this.state.player,
@@ -184,12 +191,12 @@ export default class App extends Component {
 			player: Object.assign({}, this.state.player, {type})
 		})
 
-		window.socket.emit('set-type', type)
+		socket.emit('set-type', type)
 	}
 
 	setPlayerPosition(position) {
 		console.log(`New position [${position.x},${position.y}]`)
-		window.socket.emit('set-position', position);
+		socket.emit('set-position', position);
 
 		this.setState({
 			player: Object.assign({}, this.state.player, { position })
@@ -205,7 +212,7 @@ export default class App extends Component {
 		this.setState({
 			player: Object.assign({}, this.state.player, { name })
 		})
-		window.socket.emit('set-username', name)
+		socket.emit('set-username', name)
 	}
 
 	onEnterMessage() {
@@ -219,18 +226,18 @@ export default class App extends Component {
 
 	sendMessage() {
 		console.log('Sending message')
-		window.socket.emit('message', this.state.message)
+		socket.emit('message', this.state.message)
 		this.setState({ message: '' })
 	}
 
 	backstabPlayer() {
-		window.socket.emit('message', 'Backstabbed!')
-		window.socket.emit('backstab')
+		socket.emit('message', 'Backstabbed!')
+		socket.emit('backstab')
 	}
 
 	generateDollars(number) {
 		if(number) {
-			window.socket.emit('generate', number)
+			socket.emit('generate', number)
 		}
 	}
 
@@ -255,7 +262,7 @@ export default class App extends Component {
 	}
 
 	onDollarClick({id, position}) {
-		window.socket.emit('cash-grab', id)
+		socket.emit('cash-grab', id)
 	}
 
 	render() {

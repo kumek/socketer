@@ -1,22 +1,11 @@
 let socketio = require('socket.io')
 let shortid = require('shortid')
 
-const CHARACTER_TYPES = ['butter', 'eric', 'kenny', 'kevin', 'kyle', 'stan', 'tweek', 'wendy']
-const PROPERTIES = {
-	MAX_NUMBER_OF_DOLLARS: 100,	//Maximum number of dollars available on map
-	MAX_VALUE_OF_DOLLAR: 10,
+let PROPS = require('./properties')
 
-	MAX_DOLLARS_GENERATED: 50,
+let Alerts = require('./components/Alerts')
+let Player = require('./models/Player')
 
-	DOLLAR_GRAB_DISTANCE: 300,
-
-	ENERGY_COST_GENERATE_DOLLARS: 25,
-	ENERGY_COST_BACKSTAB: 65,
-	ENERGY_COST_CHARACTER: 10,
-
-	ENERGY_REGENERATE_VALUE: 1,
-	ENERGY_REGENERATE_TIME: 3
-}
 
 let server = http => {
 	console.log('Socket servers starting')
@@ -24,11 +13,14 @@ let server = http => {
 	let players = [];
 	let cash = [];
 
+	let alerts = new Alerts(io.of('/alerts'))
+
+
 	const printDollar = (recursive = false) => {
-		if(cash.length < PROPERTIES.MAX_NUMBER_OF_DOLLARS) {
+		if(cash.length < PROPS.DOLLAR_MAX_NUMBER_ON_MAP) {
 			let dollar = {
 				id: shortid.generate(),
-				value: (Math.random() * (PROPERTIES.MAX_VALUE_OF_DOLLAR-1)) + 1,
+				value: (Math.random() * (PROPS.DOLLAR_MAX_VALUE-PROPS.DOLLAR_MIN_VALUE)) + PROPS.DOLLAR_MIN_VALUE,
 				position: {
 					x: Math.floor(Math.random()*900)-50,
 					y: Math.floor(Math.random()*900)-50
@@ -70,7 +62,7 @@ let server = http => {
 
 	const regenerateEnergy = (socket, player) => {
 		if(player.energy.value !== player.energy.max) {
-			if((player.energy.value += PROPERTIES.ENERGY_REGENERATE_VALUE) > player.energy.max) {
+			if((player.energy.value += PROPS.ENERGY_REGENERATE_VALUE) > player.energy.max) {
 				player.energy.value = player.energy.max
 			}
 
@@ -84,18 +76,15 @@ let server = http => {
 	}
 
 	io.on('connection', socket => {
-		let player = {
+		let player = new Player({
 			account: 0,
-			id: shortid.generate(),
 			energy: {
-				value: 100,
-				max: 100
+				value: PROPS.ENERGY_DEFAULT_VALUE,
+				max: PROPS.ENERGY_DEFAULT_MAX
 			},
-			position: {
-				x: 100,
-				y: 100
-			}
-		}
+			position: PROPS.STARTING_POSITION
+		})
+
 		console.log(`[${player.id}]`.yellow + ` connected`.green)
 		// socket.emit('your-id', player.id)
 		updatePlayer(socket, player);
@@ -103,12 +92,12 @@ let server = http => {
 
 		socket.on('set-username', username => {
 			player.name = username
-			player.type = CHARACTER_TYPES[Math.floor(Math.random() * (CHARACTER_TYPES.length - 1))]
+			player.type = PROPS.CHARACTER_TYPES[Math.floor(Math.random() * (PROPS.CHARACTER_TYPES.length - 1))]
 
 			players.push(player)
 			console.log(`[${player.id}]`.yellow + ` Set username: ` + `${username}`.green)
 
-			setInterval(regenerateEnergy.bind(this, socket, player), PROPERTIES.ENERGY_REGENERATE_TIME*1000)
+			setInterval(regenerateEnergy.bind(this, socket, player), PROPS.ENERGY_REGENERATE_TIME*1000)
 
 			io.emit('player-new', player)
 			io.emit('players', players)
@@ -116,12 +105,12 @@ let server = http => {
 		})
 
 		socket.on('set-type', type => {
-			if(player.energy.value < PROPERTIES.ENERGY_COST_CHARACTER) {
-				emitAlert(socket, "You don't have enough energy!")
+			if(player.energy.value < PROPS.ENERGY_COST_CHARACTER) {
+				player.alert("Not enough energy!")
 				return
 			}
 
-			player.energy.value -= PROPERTIES.ENERGY_COST_CHARACTER
+			player.energy.value -= PROPS.ENERGY_COST_CHARACTER
 			updatePlayer(socket, player)
 
 			console.log(`[${player.id}]`.yellow + ` Set type: ` + `${type}`.green)
@@ -135,15 +124,16 @@ let server = http => {
 		})
 
 		socket.on('generate', number => {
-			if(player.energy.value >= PROPERTIES.ENERGY_COST_GENERATE_DOLLARS) {
-				generateDollars(number > PROPERTIES.MAX_DOLLARS_GENERATED ? PROPERTIES.MAX_DOLLARS_GENERATED : number)
-				player.energy.value -= PROPERTIES.ENERGY_COST_GENERATE_DOLLARS
+			if(player.energy.value >= PROPS.ENERGY_COST_GENERATE_DOLLARS) {
+				generateDollars(number > PROPS.MAX_DOLLARS_GENERATED ? PROPS.MAX_DOLLARS_GENERATED : number)
+				player.energy.value -= PROPS.ENERGY_COST_GENERATE_DOLLARS
 
 				updatePlayer(socket, player)
 
-				emitAlert(io, `${player.name} generated ${number} dollars`)
+				// emitAlert(io, )
+				alerts.emit(`${player.name} generated ${number} dollars`)
 			} else {
-				emitAlert(socket, "You don't have enaugh energy!")
+				player.alert("Not enough energy")
 			}
 
 			
@@ -175,13 +165,15 @@ let server = http => {
 			let dollarFound = cash.find(dollar => dollar.id === id)
 
 			if(!dollarFound) {
-				emitAlert(socket, 'You missed!')
+				player.alert('You missed!')
+				// emitAlert(socket, 'You missed!')
 				return
 			}
 
 			// Check if you are not too far away
-			if(distance(dollarFound.position, player.position) > PROPERTIES.DOLLAR_GRAB_DISTANCE) {
-				emitAlert(socket, 'Step closer')
+			if(distance(dollarFound.position, player.position) > PROPS.DOLLAR_GRAB_DISTANCE) {
+				player.alert('Step closer')
+				// emitAlert(socket, 'Step closer')
 				return
 			}
 
@@ -196,8 +188,9 @@ let server = http => {
 		})
 
 		socket.on('backstab', () => {
-			if(player.energy.value < PROPERTIES.ENERGY_COST_BACKSTAB) {
-				emitAlert(socket, 'Not enough energy!')
+			if(player.energy.value < PROPS.ENERGY_COST_BACKSTAB) {
+				player.alert('Not enough energy!')
+				// emitAlert(socket, 'Not enough energy!')
 
 				return
 			}
@@ -213,7 +206,8 @@ let server = http => {
 				
 
 				io.emit('backstabbed', deathPlayer)
-				emitAlert(io, `${deathPlayer.name} is dead!`)
+
+				alerts.emit(`${deathPlayer.name} is dead!`)
 
 				deathPlayer.dead = true
 
@@ -222,21 +216,20 @@ let server = http => {
 				})
 
 			} else {
-				emitAlert(socket, "You didn't hit!")
+				player.alert("You didn't hit")
+				// emitAlert(socket, "You didn't hit!")
 			}
 
 			// After action, reduce energy	
-			player.energy.value -= PROPERTIES.ENERGY_COST_BACKSTAB
+			player.energy.value -= PROPS.ENERGY_COST_BACKSTAB
 			updatePlayer(socket, player)
 		})
 
 		socket.on('disconnect', () => {
 			console.log(`[${player.id}]`.yellow + `(${player.name})` + ' disconnected'.red)
-			io.emit('alert', {
-				id: shortid.generate(),
-				content: `${player.name} has left`,
-				cooldown: 2000
-			})
+			
+			alerts.emit(`${player.name} has left`)
+
 			io.emit('player-left', player)
 			players = players.filter(_player => {return _player.id !== player.id})
 		})
