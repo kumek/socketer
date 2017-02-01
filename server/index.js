@@ -4,7 +4,18 @@ let shortid = require('shortid')
 const CHARACTER_TYPES = ['butter', 'eric', 'kenny', 'kevin', 'kyle', 'stan', 'tweek', 'wendy']
 const PROPERTIES = {
 	MAX_NUMBER_OF_DOLLARS: 100,	//Maximum number of dollars available on map
-	MAX_VALUE_OF_DOLLAR: 10
+	MAX_VALUE_OF_DOLLAR: 10,
+
+	MAX_DOLLARS_GENERATED: 50,
+
+	DOLLAR_GRAB_DISTANCE: 300,
+
+	ENERGY_COST_GENERATE_DOLLARS: 25,
+	ENERGY_COST_BACKSTAB: 65,
+	ENERGY_COST_CHARACTER: 10,
+
+	ENERGY_REGENERATE_VALUE: 1,
+	ENERGY_REGENERATE_TIME: 3
 }
 
 let server = http => {
@@ -33,6 +44,10 @@ let server = http => {
 		}
 	}
 
+	const distance = (p1, p2) => {
+		return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+	}
+
 	printDollar(true)
 
 	const generateDollars = number => {
@@ -41,17 +56,49 @@ let server = http => {
 		}
 	}
 
+	const updatePlayer = (socket, props) => {
+		socket.emit('player-update', props)
+	}
+
+	const emitAlert = (socket, content) => {
+		socket.emit('alert', {
+			id: shortid.generate(), 
+			content,
+			cooldown: 2500
+		})
+	}
+
+	const regenerateEnergy = (socket, player) => {
+		if(player.energy.value !== player.energy.max) {
+			if((player.energy.value += PROPERTIES.ENERGY_REGENERATE_VALUE) > player.energy.max) {
+				player.energy.value = player.energy.max
+			}
+
+			updatePlayer(socket, {
+				energy: { 
+					value: player.energy.value,
+					max: player.energy.max
+				}
+			})
+		}
+	}
+
 	io.on('connection', socket => {
 		let player = {
 			account: 0,
 			id: shortid.generate(),
+			energy: {
+				value: 100,
+				max: 100
+			},
 			position: {
 				x: 100,
 				y: 100
 			}
 		}
 		console.log(`[${player.id}]`.yellow + ` connected`.green)
-		socket.emit('your-id', player.id)
+		// socket.emit('your-id', player.id)
+		updatePlayer(socket, player);
 
 
 		socket.on('set-username', username => {
@@ -61,12 +108,22 @@ let server = http => {
 			players.push(player)
 			console.log(`[${player.id}]`.yellow + ` Set username: ` + `${username}`.green)
 
+			setInterval(regenerateEnergy.bind(this, socket, player), PROPERTIES.ENERGY_REGENERATE_TIME*1000)
+
 			io.emit('player-new', player)
 			io.emit('players', players)
 			io.emit('cash', cash)
 		})
 
 		socket.on('set-type', type => {
+			if(player.energy.value < PROPERTIES.ENERGY_COST_CHARACTER) {
+				emitAlert(socket, "You don't have enough energy!")
+				return
+			}
+
+			player.energy.value -= PROPERTIES.ENERGY_COST_CHARACTER
+			updatePlayer(socket, player)
+
 			console.log(`[${player.id}]`.yellow + ` Set type: ` + `${type}`.green)
 
 			player.type = type
@@ -78,12 +135,18 @@ let server = http => {
 		})
 
 		socket.on('generate', number => {
-			generateDollars(number > 50 ? 50 : number);
-			io.emit('alert', {
-				id: shortid.generate(),
-				content: `${player.name} generated ${number} dollars`,
-				cooldown: 2500
-			})
+			if(player.energy.value >= PROPERTIES.ENERGY_COST_GENERATE_DOLLARS) {
+				generateDollars(number > PROPERTIES.MAX_DOLLARS_GENERATED ? PROPERTIES.MAX_DOLLARS_GENERATED : number)
+				player.energy.value -= PROPERTIES.ENERGY_COST_GENERATE_DOLLARS
+
+				updatePlayer(socket, player)
+
+				emitAlert(io, `${player.name} generated ${number} dollars`)
+			} else {
+				emitAlert(socket, "You don't have enaugh energy!")
+			}
+
+			
 		})
 
 		socket.on('set-position', position => {
@@ -108,31 +171,37 @@ let server = http => {
 		})
 
 		socket.on('cash-grab', id => {
-			let dollarFound
-			cash = cash.filter(dollar => {
-				if(dollar.id === id) {
-					dollarFound = dollar
-					return false
-				}
-				return true
-			})
+			// Get clicked dollar
+			let dollarFound = cash.find(dollar => dollar.id === id)
 
-			if(dollarFound) {
-				player.account += dollarFound.value
-				socket.emit('dollar-new', dollarFound)
-				console.log(dollarFound);
-				io.emit('cash-grabbed', {grabbedDollar: dollarFound, playerId: player.id})
-			} else {
-				socket.emit('alert', {
-					id: shortid.generate(),
-					content: 'You missed that money!',
-					cooldown: 2000
-				})
+			if(!dollarFound) {
+				emitAlert(socket, 'You missed!')
+				return
 			}
+
+			// Check if you are not too far away
+			if(distance(dollarFound.position, player.position) > PROPERTIES.DOLLAR_GRAB_DISTANCE) {
+				emitAlert(socket, 'Step closer')
+				return
+			}
+
+			cash = cash.filter(dollar => dollar.id !== dollarFound.id)
+
+			// All conditions passsed, grab that money
+			player.account += dollarFound.value
+			socket.emit('dollar-new', dollarFound)
+			console.log(dollarFound);
+			io.emit('cash-grabbed', {grabbedDollar: dollarFound, playerId: player.id})
 
 		})
 
 		socket.on('backstab', () => {
+			if(player.energy.value < PROPERTIES.ENERGY_COST_BACKSTAB) {
+				emitAlert(socket, 'Not enough energy!')
+
+				return
+			}
+
 			let deathPlayer = players.find(({id, name, position, dead}) => {
 				return (id !== player.id ) && (!dead) &&
 				(Math.abs(position.x - player.position.x) < 45) &&
@@ -141,12 +210,10 @@ let server = http => {
 			})
 
 			if(deathPlayer) {
+				
+
 				io.emit('backstabbed', deathPlayer)
-				io.emit('alert', {
-					id: shortid.generate(),
-					content: `${deathPlayer.name} is dead!`,
-					cooldown: 2500
-				})
+				emitAlert(io, `${deathPlayer.name} is dead!`)
 
 				deathPlayer.dead = true
 
@@ -155,12 +222,12 @@ let server = http => {
 				})
 
 			} else {
-				socket.emit('alert', {
-					id: shortid.generate(),
-					content: "You didn't hit!",
-					cooldown: 2500
-				})
+				emitAlert(socket, "You didn't hit!")
 			}
+
+			// After action, reduce energy	
+			player.energy.value -= PROPERTIES.ENERGY_COST_BACKSTAB
+			updatePlayer(socket, player)
 		})
 
 		socket.on('disconnect', () => {

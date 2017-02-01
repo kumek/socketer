@@ -69,12 +69,20 @@ export default class App extends Component {
 			})
 		})
 
-		window.socket.on('your-id', (id) => {
-			console.log(`You received your id: ${id}`)
+		window.socket.on('player-update', props => {
+			console.log('Your player is updated!')
+			console.log(props)
 			this.setState({
-				player: Object.assign({}, this.state.player, {id})
+				player: Object.assign({}, this.state.player, props)
 			})
 		})
+
+		// window.socket.on('your-id', (id) => {
+		// 	console.log(`You received your id: ${id}`)
+		// 	this.setState({
+		// 		player: Object.assign({}, this.state.player, {id})
+		// 	})
+		// })
 
 		window.socket.on('player-type', ({playerId, type}) => {
 			console.log(`Player ${playerId} changed to be ${type}`)
@@ -247,7 +255,6 @@ export default class App extends Component {
 	}
 
 	onDollarClick({id, position}) {
-		window.socket.emit('set-position', position)
 		window.socket.emit('cash-grab', id)
 	}
 
