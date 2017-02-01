@@ -20,7 +20,7 @@ const ServerStats= ({
 								className="server-stats__player" 
 								key={player.id}>
 								{console.log(player.account)}
-							{player.name} <span className="server-stats__player__account">{player.account}</span>
+							{player.name} <span className="server-stats__player__account">{player.account.toFixed(2)}</span>
 							<img
 								className="server-stats__player__logo"
 								src={`/resources/images/${assets.characters.find(asset => asset.name === player.type).file}`} 

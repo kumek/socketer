@@ -11,7 +11,8 @@ const Dollar = ({
 			style={
 					{	
 						top: dollar.position.y,
-						left: dollar.position.x
+						left: dollar.position.x,
+						width: 30*(1 + dollar.value/3)
 					}
 				}
 			onClick={onDollarClick.bind(null, dollar)}

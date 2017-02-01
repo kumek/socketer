@@ -3,7 +3,8 @@ let shortid = require('shortid')
 
 const CHARACTER_TYPES = ['butter', 'eric', 'kenny', 'kevin', 'kyle', 'stan', 'tweek', 'wendy']
 const PROPERTIES = {
-	MAX_NUMBER_OF_DOLLARS: 100	//Maximum number of dollars available on map
+	MAX_NUMBER_OF_DOLLARS: 100,	//Maximum number of dollars available on map
+	MAX_VALUE_OF_DOLLAR: 10
 }
 
 let server = http => {
@@ -16,7 +17,7 @@ let server = http => {
 		if(cash.length < PROPERTIES.MAX_NUMBER_OF_DOLLARS) {
 			let dollar = {
 				id: shortid.generate(),
-				value: 1,
+				value: (Math.random() * (PROPERTIES.MAX_VALUE_OF_DOLLAR-1)) + 1,
 				position: {
 					x: Math.floor(Math.random()*900)-50,
 					y: Math.floor(Math.random()*900)-50

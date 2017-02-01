@@ -6,7 +6,7 @@ const PlayerStats = ({
 	return (
 		<div className="player-stats">
 			<div className="palyer-stats__account">
-				Cash: {player.account}
+				Cash: {player.account.toFixed(2)}
 			</div>
 		</div>
 		)
