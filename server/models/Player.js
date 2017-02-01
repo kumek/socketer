@@ -15,7 +15,7 @@ class Player {
 		return value >= this.energy.value
 	}
 
-	emitAlert(message) {
+	alert(message) {
 		this.socket.emit('alert', {
 			content: message,
 			cooldown: PROPS.ALERT_DEFAULT_COOLDOWN
