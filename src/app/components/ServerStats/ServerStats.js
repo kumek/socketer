@@ -8,7 +8,7 @@ const ServerStats= ({
 	return (
 		<div className="server-stats">
 			<div className="server-stats__cash">
-				Dollars: {cash.length}
+				Dollars: {cash ? cash.length : '0'}
 			</div>
 			<div className="server-stats__players">
 				<ul>
@@ -19,7 +19,6 @@ const ServerStats= ({
 							<li 
 								className="server-stats__player" 
 								key={player.id}>
-								{console.log(player.account)}
 							{player.name} <span className="server-stats__player__account">{player.account.toFixed(2)}</span>
 							<img
 								className="server-stats__player__logo"

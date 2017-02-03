@@ -29,7 +29,7 @@ module.exports = {
 	ENERGY_DEFAULT_MAX: 100,
 
 	// Starting position
-	STARTING_POSITION: {x: 100, y: 100},
+	STARTING_POSITION: {x: 450, y: 450},
 
 	//Alerts Settings
 	ALERT_DEFAULT_COOLDOWN: 2500

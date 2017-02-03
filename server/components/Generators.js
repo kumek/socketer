@@ -1,0 +1,5 @@
+class Generators {
+	constructor()
+
+	
+}

@@ -3,9 +3,14 @@ import Character from '../Character/Character'
 import Message from '../Message/Message'
 
 export default class CharactersMap extends Component {
-	drawPlayers({players, mapSize}) {
+	drawPlayers(players) {
 		//Count pixels per one unit
-		return players.map(player => {
+		console.log('drawingPlayers')
+		return players
+			.sort((p1, p2) => {
+				return p1.position.y >  p2.position.y
+			})
+			.map(player => {
 			return (
 				<Character 
 					key={player.id}
@@ -47,7 +52,7 @@ export default class CharactersMap extends Component {
 						/generate [number] (max=50) - 25E
 					</p>
 				</div>
-				{this.drawPlayers({ players: this.props.players })}
+				{this.drawPlayers(this.props.players)}
 				{this.drawMessages({messages: this.props.messages})}
 			</div>	
 		)

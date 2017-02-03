@@ -7,15 +7,15 @@ const Character = ({
 	type,
 	dead
 }) => {
-	let asset = assets.characters.find(char => char.name === (dead ? 'dead' : type))
+	let asset = assets.characters.find(char => char.name === (dead ? 'dead' : type || 'eric'))
 
 	return (
 		<div className="character"
 			style={
 				{
 					position: 'absolute',
-					top: position.y - 100,
-					left: position.x - 50
+					top: (position ? position.y : 400) - 100,
+					left: (position ? position.x : 340) - 50
 				}
 			}>
 			<img className="character__logo" src={`resources/images/${asset ? asset.file : 'butter.png'}`} alt="" style={dead ? {height: '100px'} : null}/>

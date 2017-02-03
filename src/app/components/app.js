@@ -1,25 +1,23 @@
 import React, { Component } from 'react'
+import shortid from 'shortid'
+
 import TextInput from './TextInput/TextInput'
 import Room from './Room/Room'
 import LoginForm from './LoginForm/LoginForm'
 import Alerts from './Alerts/Alerts'
 
-import {socket, alerts} from './sockets'
+import {socket, alerts, players, messages, cash} from './sockets'
 
 export default class App extends Component {
 	constructor(props) {
 		super();
-
-		console.log('app.js constructor run')
 
 		super(props);
 
 		this.state = {
 			message: '',
 			messages: [],
-			player: {
-				account: 0
-			},
+			player: {},
 			players: [],
 			alerts: [],
 			cash: [],
@@ -36,10 +34,64 @@ export default class App extends Component {
 		this.dismissAlert = this.dismissAlert.bind(this)
 		this.fadeAlert = this.fadeAlert.bind(this)
 
-		// Sockets emiting
+		//== ALERTS SOCKETS
 		alerts.on('alert', alert => {
-			console.log('SUPER ALERT APPEARED')
-			console.log(alert)
+			let alerts = this.state.alerts.slice()
+			let _alert = Object.assign({}, alert, 
+				{
+					id: shortid.generate(),
+					cooldown: alert.cooldown || 2500
+				})
+			alerts.push(_alert)
+			this.setState({alerts})
+
+			this.fadeAlert(_alert)
+		})
+
+	
+
+		//== ALL PLAYERS SOCKETS
+		players.on('update', player => {
+			let _players = this.state.players.slice()
+
+			if(_players.find(_player => _player.id === player.id)) {
+				_players = _players.map(_player => {
+					return (_player.id === player.id) ? Object.assign({}, _player, player) : _player
+				})
+			} else {
+				_players.push(player)
+			}
+
+			this.setState({players: _players})
+
+		})
+
+		players.on('left', id => {
+			this.setState({
+				players: this.state.players.filter(_player => _player.id !== id)
+			})
+		})
+
+		//== CASH SOCKETS ==//
+		cash.on('new', dollar => {
+			let _cash = this.state.cash.slice()
+			_cash.push(dollar)
+			this.setState({cash: _cash})
+		})
+
+		cash.on('taken', ({id}) => {
+			this.setState({cash: this.state.cash.filter(_dollar => _dollar.id !== id)})
+		})
+
+		cash.on('all', cash => {
+			this.setState({cash})
+		})
+
+		//== PRIVATE SOCKETS ==/
+		socket.on('player-update', attrs => {
+			this.setState({
+				player: Object.assign({}, this.state.player, attrs)
+			})
 		})
 
 		socket.on('message', ({id, message, playerId}) => {
@@ -53,117 +105,24 @@ export default class App extends Component {
 			this.fadeMessage({id, cooldown: 2000})
 		})
 
-		alerts.on('alert', alert => {
-			console.log('Alert: ')
+		socket.on('alert', alert => {
+			let _alert = Object.assign({}, alert, {id: shortid.generate()})
+
 			let alerts = this.state.alerts.slice()
-			alerts.push(alert)
+			alerts.push(_alert)
+
 			this.setState({alerts})
 
-			if(alert.cooldown) this.fadeAlert(alert)
+			if(alert.cooldown) {
+				this.fadeAlert(_alert)
+			}
 		})
 
-		socket.on('players', players => {
-			this.setState({players})
-		})
 
-		socket.on('cash', cash => {
-			this.setState({cash})
-		})
 
-		socket.on('player-type', ({playerId, type}) => {
-			let players = this.state.players.map(player => {
-				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
-			})
-		})
-
-		socket.on('player-update', props => {
-			console.log('Your player is updated!')
-			console.log(props)
-			this.setState({
-				player: Object.assign({}, this.state.player, props)
-			})
-		})
-
-		// socket.on('your-id', (id) => {
-		// 	console.log(`You received your id: ${id}`)
-		// 	this.setState({
-		// 		player: Object.assign({}, this.state.player, {id})
-		// 	})
-		// })
-
-		socket.on('player-type', ({playerId, type}) => {
-			console.log(`Player ${playerId} changed to be ${type}`)
-			let players = this.state.players.map(player => {
-				return (playerId === player.id ? Object.assign({}, player, {type}) : player)
-			})
-
-			this.setState({players})
-		})
-
-		socket.on('player-position', ({playerId, position}) => {
-			console.log(`Player ${playerId} moved to ${position.x},${position.y}`)
-			let players = this.state.players.slice().map(player => {
-				return (playerId === player.id ? Object.assign({}, player, {position}) : player)
-			})
-			players.sort((p1, p2) => {
-				return p1.position.y - p2.position.y
-			})
-			this.setState({players})
-		})
-
-		socket.on('player-new', player => {
-			let players = this.state.players.slice()
-			players.push(player)
-			console.log(`${player.name}[${player.id}] has joined`);
-			this.setState({players})
-		})
-
-		socket.on('player-left', player => {
-			let players = this.state.players.filter(_player => _player.id !== player.id);
-			console.log(`${player.name}[${player.id}] has left`);
-			this.setState({players});
-		})
-
-		socket.on('backstabbed', ({id, name}) => {
-			let players = this.state.players.slice().map(player => (player.id === id ? Object.assign({}, player, {dead: true}) : player))
-			console.log(players)
-			this.setState({players})
-			console.log(`${name} has beed backstabbed! He's dead :(`)
-		})
-
-		socket.on('cash-new', dollar => {
-			console.log('New dollar appeared')
-			let cash = this.state.cash.slice()
-			cash.push(dollar)
-			this.setState({cash})
-		})
-
-		socket.on('cash-grabbed', ({grabbedDollar, playerId}) => {
-			console.log(grabbedDollar);
-			this.setState({
-				cash: this.state.cash.filter(dollar => dollar.id !== grabbedDollar.id),
-				players: this.state.players
-					.slice()
-					.map(player => player.id === playerId ?
-							Object.assign({}, player, {account: player.account + grabbedDollar.value}) :
-							player
-					)
-			})
-		})
-
-		socket.on('dollar-new', ({value}) => {
-			console.log(`You catched this dollar! ${value}`)
-			this.setState({
-				player: Object.assign({}, this.state.player,
-					{
-						account: this.state.player.account + value
-					}
-				)
-			})
-		})
 	}
 
-	// Fade message after time
+	// Fade message or alert after time
 	fadeMessage({id, cooldown}) {
 		setTimeout(() => {
 			let messages = this.state.messages.filter(message => message.id !== id)
@@ -178,15 +137,13 @@ export default class App extends Component {
 		}, cooldown)
 	}
 
-	// State setters
-	setPlayerName(name) {
-		this.setState({
-			player: Object.assign({}, this.state.player, {name})
-		})
+	dismissAlert({id}) {
+		this.setState({alerts : this.state.alerts.slice().filter(alert => alert.id !== id)})
 	}
 
+
+	// State setters
 	setPlayerType(type) {
-		console.log(`Changed type to ${type}`)
 		this.setState({
 			player: Object.assign({}, this.state.player, {type})
 		})
@@ -195,12 +152,7 @@ export default class App extends Component {
 	}
 
 	setPlayerPosition(position) {
-		console.log(`New position [${position.x},${position.y}]`)
 		socket.emit('set-position', position);
-
-		this.setState({
-			player: Object.assign({}, this.state.player, { position })
-		})
 	}
 
 	setMessage(message) {
@@ -208,11 +160,7 @@ export default class App extends Component {
 	}
 
 	sendPlayerName(name) {
-		if(name.split('')[0])
-		this.setState({
-			player: Object.assign({}, this.state.player, { name })
-		})
-		socket.emit('set-username', name)
+		socket.emit('set-name', name)
 	}
 
 	onEnterMessage() {
@@ -225,43 +173,20 @@ export default class App extends Component {
 	}
 
 	sendMessage() {
-		console.log('Sending message')
 		socket.emit('message', this.state.message)
 		this.setState({ message: '' })
 	}
 
-	backstabPlayer() {
-		socket.emit('message', 'Backstabbed!')
-		socket.emit('backstab')
-	}
 
-	generateDollars(number) {
-		if(number) {
-			socket.emit('generate', number)
-		}
-	}
 
 	runCommand([command, ...params]) {
-		switch(command) {
-			case 'character' :
-				this.setPlayerType(params[0])
-				break
-			case 'backstab' :
-				this.backstabPlayer()
-				break
-			case 'generate' :
-				this.generateDollars(params[0])
-			default:
-		}
+		socket.emit('command', {command, params})
 
 		this.setState({message: ''})
 	}
 
-	dismissAlert({id}) {
-		this.setState({alerts : this.state.alerts.slice().filter(alert => alert.id !== id)})
-	}
 
-	onDollarClick({id, position}) {
+	onDollarClick({id}) {
 		socket.emit('cash-grab', id)
 	}
 

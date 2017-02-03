@@ -17,6 +17,7 @@ class Alerts {
 		})
 	}
 
+	
 }
 
 module.exports = Alerts
