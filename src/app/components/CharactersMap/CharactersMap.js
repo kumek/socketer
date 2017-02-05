@@ -50,6 +50,8 @@ export default class CharactersMap extends Component {
 						/character [name] (butter,kenny,eric,kevin,kyle,stan,tweek,wendy) - 10E<br/>
 						/backstab (Standing behind somebody) - 65E<br/>
 						/generate [number] (max=50) - 25E
+						/give [player] [cash]
+						/revive (After being backstabbed) - $1250, 50E
 					</p>
 				</div>
 				{this.drawPlayers(this.props.players)}

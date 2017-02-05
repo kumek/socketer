@@ -19,6 +19,10 @@ module.exports = {
 	ENERGY_COST_GENERATE_DOLLARS: 25,
 	ENERGY_COST_BACKSTAB: 65,
 	ENERGY_COST_CHARACTER: 10,
+	ENERGY_COST_REVIVE: 50,
+
+	// Money cost of actions
+	MONEY_COST_REVIVE: 1250,
 
 	// Energy regeneration parameters
 	ENERGY_REGENERATE_VALUE: 1,

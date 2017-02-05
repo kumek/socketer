@@ -36,6 +36,9 @@ class Player {
 		this.publicUpdate(attrs)
 	}
 
+	set dead(value) { this.attributes = {dead: true } }
+	get dead() { return this.attributes.dead}
+
 	set position(position) { this.attributes = {position}}
 	get position() { return this.attributes.position }
 
@@ -53,11 +56,19 @@ class Player {
 	}
  
 	increaseAccount(value) {
-		this.attributes = { account: this.account + value }
+		this.attributes = { account: this.account + parseFloat(value) }
+	}
+
+	decreaseAccount(value) {
+		this.attributes = { account: this.account - parseFloat(value) }
 	}
 
 	hasEnergy(value) {
 		return value <= this.energy
+	}
+
+	hasMoney(value) {
+		return parseFloat(value) <= this.account
 	}
 
 	alert(message) {

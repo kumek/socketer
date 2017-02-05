@@ -45,7 +45,11 @@ let server = http => {
 
 		socket.on('command', ({command, params}) => commands.execute({command, params}, {player, players, alerts, generateDollars}))
 
-		socket.on('set-position', position => player.position = position)
+		socket.on('set-position', position => {
+			if(!player.dead) {
+				player.position = position
+			}
+		})
 
 		socket.on('message', message => {
 			console.log(`[${player.id}]`.yellow + `(${player.name}): ` + `"${message}"`)
