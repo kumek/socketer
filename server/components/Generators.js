@@ -30,7 +30,6 @@ exports.RESTORE_HP = ({players}) => () => players.all.forEach(player => {
 
 class Generators {
 	constructor(data) {
-		console.log(data.players)
 		this.generators = []
 		this.data = data
 	}
@@ -47,7 +46,7 @@ class Generators {
 	}
 
 	runOnce(generator) {
-		generator(data)
+		generator(this.data)()
 	}
 
 	stopAll() {

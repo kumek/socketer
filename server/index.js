@@ -62,8 +62,14 @@ let server = http => {
 			{command, params},
 			{
 				player, players, alerts, 
-				generateDollars: () => { generators.runOnce(GENERATE_DOLLAR)}
-			}))
+				generateDollars: (number) => {
+					for(let i=0; i<(number > 50 ? 50 : number); i++) {
+						// generators.runOnce(GENERATE_DOLLAR)
+						setTimeout(() => generators.runOnce(GENERATE_DOLLAR), 150*i)
+					}
+				}
+			}
+		));
 
 		socket.on('set-position', position => {
 			if(!player.dead) {
