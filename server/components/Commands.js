@@ -13,7 +13,7 @@ const backstabCommand = (params, {player, players, alerts}) => {
 		return
 	}
 
-	let deathPlayer = players.find(({id, name, position, dead}) => {
+	let deathPlayer = players.all.find(({id, name, position, dead}) => {
 		return (id !== player.id ) && (!dead) &&
 		(Math.abs(position.x - player.position.x) < 45) &&
 		(position.y - player.position.y < 30) &&
