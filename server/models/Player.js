@@ -9,9 +9,15 @@ class Player {
 		this._attributes = {
 			id: shortid.generate(),
 			account: 0,
+
+			hp: PROPS.HP_DEFAULT_VALUE,
+			maxHP: PROPS.HP_DEFAULT_VALUE,
+
 			energy: PROPS.ENERGY_DEFAULT_VALUE,
-			maxEnergy: PROPS.ENERGY_DEFAULT_MAX,
+			maxEnergy: PROPS.ENERGY_DEFAULT_VALUE,
+
 			position: PROPS.STARTING_POSITION,
+			
 			type: PROPS.CHARACTER_TYPES[Math.floor(Math.random() * PROPS.CHARACTER_TYPES.length)]
 		}
 
@@ -61,6 +67,14 @@ class Player {
 
 	decreaseAccount(value) {
 		this.attributes = { account: this.account - parseFloat(value) }
+	}
+
+	increaseHP(value) {
+		this.attributes = { hp: this.hp + parseInt(value)}
+	}
+
+	decreaseHP(value) {
+		this.attributes = { hp: this.hp - parseInt(value)}
 	}
 
 	hasEnergy(value) {

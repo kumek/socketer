@@ -1,0 +1,48 @@
+.progress-bar {
+	width: 100%;
+	height: 15px;
+	position: relative;
+	color: black;
+	text-shadow: none;
+	background-color: $progress_bar_color_bg;
+	margin-bottom: 4px;
+	border: 2px solid black;
+
+	&__progress {
+		height: 100%;
+		background-color: $progress_bar_color_main;
+		border-right: 2px solid black;
+	}
+
+	&__caption {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+
+		text-align: right;
+		font-size: 18px;
+		line-height: 15px;
+
+		padding: 0;
+		padding-right: 4px;
+	}
+
+
+	&--energy {
+		background-color: $progress_bar_energy_color_bg;
+
+		.progress-bar__progress {
+			background-color: $progress_bar_energy_color_main;
+		}
+	}
+
+	&--hp {
+		background-color: $progress_bar_hp_color_bg;
+
+		.progress-bar__progress {
+			background-color: $progress_bar_hp_color_main;
+		}
+	}
+}

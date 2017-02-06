@@ -30,7 +30,9 @@ module.exports = {
 
 	// Energy default values
 	ENERGY_DEFAULT_VALUE: 100,
-	ENERGY_DEFAULT_MAX: 100,
+
+	// HP default values
+	HP_DEFAULT_VALUE: 100,
 
 	// Starting position
 	STARTING_POSITION: {x: 450, y: 450},
