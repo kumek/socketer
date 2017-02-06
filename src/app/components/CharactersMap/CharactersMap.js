@@ -7,6 +7,7 @@ export default class CharactersMap extends Component {
 		//Count pixels per one unit
 		console.log('drawingPlayers')
 		return players
+			.filter(player => player.position)
 			.sort((p1, p2) => {
 				return p1.position.y >  p2.position.y
 			})

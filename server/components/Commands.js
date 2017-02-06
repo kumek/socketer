@@ -86,7 +86,7 @@ const reviveCommand = (params, {player}) => {
 }
 
 const giveCommand = (params, {player, players}) => {
-	let foundPlayer = players.find(_player => _player.name && _player.name.toLowerCase() === params[0].toLowerCase())
+	let foundPlayer = players.all.find(_player => _player.name && _player.name.toLowerCase() === params[0].toLowerCase())
 	if(!foundPlayer) {
 		player.alert(`No such player "${params[0]}`)
 		return

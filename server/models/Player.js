@@ -12,9 +12,11 @@ class Player {
 
 			hp: PROPS.HP_DEFAULT_VALUE,
 			maxHP: PROPS.HP_DEFAULT_VALUE,
+			restoreHP: PROPS.HP_DEFAULT_RESTORE,
 
 			energy: PROPS.ENERGY_DEFAULT_VALUE,
 			maxEnergy: PROPS.ENERGY_DEFAULT_VALUE,
+			restoreEnergy: PROPS.ENERGY_DEFAULT_RESTORE,
 
 			position: PROPS.STARTING_POSITION,
 			
@@ -51,6 +53,8 @@ class Player {
 	get id() { return this.attributes.id }
 	get account() { return this.attributes.account }
 	get energy() { return this.attributes.energy }
+	get hp() { return this.attributes.hp }
+
 	get name() { return this.attributes.name }
 	get type() { return this.attributes.type }
 
@@ -60,17 +64,21 @@ class Player {
 	reduceEnergy(value) {
 		this.attributes = { energy: this.energy - value }
 	}
+
+	increaseEnergy(value) {
+		this.attributes = { energy: this.energy + value }
+	}
  
 	increaseAccount(value) {
 		this.attributes = { account: this.account + parseFloat(value) }
 	}
-
+ 
 	decreaseAccount(value) {
 		this.attributes = { account: this.account - parseFloat(value) }
 	}
 
 	increaseHP(value) {
-		this.attributes = { hp: this.hp + parseInt(value)}
+		this.attributes = { hp: this.attributes.hp + parseInt(value)}
 	}
 
 	decreaseHP(value) {

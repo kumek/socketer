@@ -20,6 +20,7 @@ module.exports = {
 	ENERGY_COST_BACKSTAB: 65,
 	ENERGY_COST_CHARACTER: 10,
 	ENERGY_COST_REVIVE: 50,
+	ENERGY_DEFAULT_RESTORE: 5,
 
 	// Money cost of actions
 	MONEY_COST_REVIVE: 1250,
@@ -33,6 +34,7 @@ module.exports = {
 
 	// HP default values
 	HP_DEFAULT_VALUE: 100,
+	HP_DEFAULT_RESTORE: 1,
 
 	// Starting position
 	STARTING_POSITION: {x: 450, y: 450},
