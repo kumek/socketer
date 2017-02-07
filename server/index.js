@@ -61,7 +61,7 @@ let server = http => {
 		socket.on('command', ({command, params}) => commands.execute(
 			{command, params},
 			{
-				player, players, alerts, 
+				player, players, alerts, cashStore,
 				generateDollars: (number) => {
 					for(let i=0; i<(number > 50 ? 50 : number); i++) {
 						// generators.runOnce(GENERATE_DOLLAR)

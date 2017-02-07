@@ -5,8 +5,14 @@ const GENERATE = 'generate'
 const CHARACTER = 'character'
 const REVIVE = 'revive'
 const GIVE = 'give'
+const GRAB = 'grab'
 
+//== HELPER FUNCTIONS
+const distance = (p1, p2) => {
+	return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+}
 
+//== COMMAND FUNCTIONS
 const backstabCommand = (params, {player, players, alerts}) => {
 	if(!player.hasEnergy(PROPS.ENERGY_COST_BACKSTAB)) {
 		player.alert('Not enough energy')
@@ -103,6 +109,25 @@ const giveCommand = (params, {player, players}) => {
 	foundPlayer.alert(`You have received $${params[1]} from ${player.name}`)
 }
 
+const grabCommand = (params, {player, cashStore}) => {
+	if(!player.hasEnergy(PROPS.ENERGY_COST_GRAB)) {
+		player.alert(`Not enough energy (${PROPS.ENERGY_COST_GRAB})`)
+		return
+	}
+
+	//== ALL PASSED
+	let foundDollars = cashStore.cash.filter(({position}) => distance(position, player.position) <= player.attributes.grabRadius)
+	console.log(foundDollars)
+	let sumOfDollars = foundDollars.map(({value}) => value).reduce((a, b) => a + b, 0)
+
+
+	player.increaseAccount(sumOfDollars)
+	player.alert(`Grabbed $${sumOfDollars.toFixed(2)}`)
+	player.reduceEnergy(PROPS.ENERGY_COST_GRAB)
+
+	foundDollars.forEach(cashStore.takeDollar)
+}
+
 exports.execute = ({command, params}, data) => {
 	switch(command.toLowerCase()) {
 		case BACKSTAB:
@@ -123,6 +148,10 @@ exports.execute = ({command, params}, data) => {
 
 		case GIVE:
 			giveCommand(params, data)
+			break
+
+		case GRAB:
+			grabCommand(params, data)
 			break
 
 		default:

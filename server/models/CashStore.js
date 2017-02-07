@@ -2,6 +2,10 @@ class CashStore {
 	constructor({cashSocket}) {
 		this.cashSocket = cashSocket
 		this._cash = []
+
+		this.findDollar = this.findDollar.bind(this)
+		this.takeDollar = this.takeDollar.bind(this)
+
 	}
 
 	set cash(_cash) {

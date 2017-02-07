@@ -15,7 +15,7 @@ module.exports = ({io, playersSocket, alerts}) => {
 				return
 			}
 
-			if(distance(dollarFound.position, player.position) > PROPS.DOLLAR_GRAB_DISTANCE) {
+			if(distance(dollarFound.position, player.position) > player.attributes.grabRadius) {
 				player.alert('Step closer')
 				return
 			}

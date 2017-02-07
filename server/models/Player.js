@@ -18,6 +18,8 @@ class Player {
 			maxEnergy: PROPS.ENERGY_DEFAULT_VALUE,
 			restoreEnergy: PROPS.ENERGY_DEFAULT_RESTORE,
 
+			grabRadius: PROPS.GRAB_DEFAULT_RADIUS,
+
 			position: PROPS.STARTING_POSITION,
 			
 			type: PROPS.CHARACTER_TYPES[Math.floor(Math.random() * PROPS.CHARACTER_TYPES.length)]
