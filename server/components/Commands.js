@@ -30,6 +30,9 @@ const backstabCommand = (params, {player, players, alerts}) => {
 		alerts.emit(`${deathPlayer.name} is dead!`)
 
 		deathPlayer.dead = true
+
+		player.increaseAccount(deathPlayer.account/2)
+		deathPlayer.decreaseAccount(deathPlayer.account/2)
 	} else {
 		player.alert("You didn't hit")
 	}
