@@ -16,7 +16,14 @@ export default class App extends Component {
 		super(props);
 		this.meta = {
 			title: 'Socketer Game - Power of socket.io',
-			description: 'Game built with socket.io, react, node, express.'
+			description: 'Game built with socket.io, react, node, express.',
+			meta: {
+				property: {
+					'og:title': 'Socketer Game - Power of socket.io',
+					'og:site_name': 'Socketer Game',
+					'og:image': 'http://socketer.kumek.pl/resources/images/facebook_image.png'
+				}
+			}
 		}
 		
 

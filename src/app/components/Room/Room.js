@@ -20,7 +20,7 @@ const Room = ({
 }) => {
 	return (
 		<div>
-			<DocumentMeta {...{title: `Socketer - ${player.name}`}}/>
+			<DocumentMeta {...{title: `Socketer - ${player.name}`}} extend/>
 
 			<Items 
 				cash={cash}
