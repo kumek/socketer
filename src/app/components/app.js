@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import DocumentMeta from 'react-document-meta';
 import shortid from 'shortid'
 
 import TextInput from './TextInput/TextInput'
@@ -13,6 +14,11 @@ export default class App extends Component {
 		super();
 
 		super(props);
+		this.meta = {
+			title: 'Socketer Game - Power of socket.io',
+			description: 'Game built with socket.io, react, node, express.'
+		}
+		
 
 		this.state = {
 			message: '',
@@ -191,8 +197,10 @@ export default class App extends Component {
 	}
 
 	render() {
+		
 		return (
 			<div className="app-container">
+			<DocumentMeta {...this.meta}/>
 			{this.state.player.name ? 
 				<Room
 					player={this.state.player}

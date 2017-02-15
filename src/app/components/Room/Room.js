@@ -1,4 +1,6 @@
 import React, {Component} from 'react'
+import DocumentMeta from 'react-document-meta'
+
 import TextInput from '../TextInput/TextInput'
 import CharactersMap from '../CharactersMap/CharactersMap'
 import Items from '../Items/Items'
@@ -18,6 +20,8 @@ const Room = ({
 }) => {
 	return (
 		<div>
+			<DocumentMeta {...{title: `Socketer - ${player.name}`}}/>
+
 			<Items 
 				cash={cash}
 				onDollarClick={onDollarClick}
